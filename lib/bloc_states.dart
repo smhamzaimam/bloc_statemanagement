@@ -32,9 +32,9 @@ class ErrorState extends BlocState {
       : super();
 }
 
-class UpdatePageBlocState extends BlocState {
+class UpdatePageState extends BlocState {
   bool hasMoreData = false;
-  UpdatePageBlocState({required this.hasMoreData})
+  UpdatePageState({required this.hasMoreData})
       : super();
 }
 

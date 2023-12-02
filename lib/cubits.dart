@@ -34,38 +34,51 @@ class GetDataCubit extends Cubit<BlocState> {
 }
 
 class GetPaginatedDataCubit<T> extends Cubit<BlocState> {
-  List<T> data = [];
-  int page = 1;
-  bool loading = false, hasMore = true;
-  late Future<List<T>> Function(int page) fetchData;
-  final int limit = 10;
+  List<T> _data = [];
+  int _page = 1;
+  bool _loading = false, _hasMore = true;
+  late Future<List<T>> Function(int page) dataFetchFunction;
+  final int _limit = 10;
+  final String errorMessage, dataNotFoundMessage;
 
-  GetPaginatedDataCubit(BlocState initialState) : super(initialState);
+
+  GetPaginatedDataCubit.initialize({
+    required BlocState initialState,
+    required this.dataFetchFunction,
+    required this.errorMessage,
+    required this.dataNotFoundMessage,
+  }) : super(initialState);
+int getDataLength()=>_data.length;
+
+T getListItem(int index)=>_data[index];
 
   getData({bool refreshPagination = false}) async {
-    if (refreshPagination) {
-      data.clear();
-      page = 1;
-      hasMore = true;
-
-      emit(UpdatePageBlocState(hasMoreData: hasMore));
-    }
-    if (!loading) {
-      loading = true;
-      final response = await this.fetchData(page);
-      if (response.isEmpty || response.length < limit) {
-        hasMore = false;
-      } else {
-        page++;
+    try {
+      if (refreshPagination) {
+        _data.clear();
+        _page = 1;
+        _hasMore = true;  
       }
-      data.addAll(response);
-      loading = false;
+      emit(UpdatePageState(hasMoreData: _hasMore));
+      if (!_loading) {
+        _loading = true;
+        final response = await this.dataFetchFunction(_page);
+        if (response.isEmpty || response.length < _limit) {
+          _hasMore = false;
+        } else {
+          _page++;
+        }
+        _data.addAll(response);
+        _loading = false;
 
-      emit(UpdatePageBlocState(hasMoreData: hasMore));
-    }
+        emit(UpdatePageState(hasMoreData: _hasMore));
+      }
 
-    if (this.data.isEmpty) {
-      emit(DataNotFoundState(message: 'No data found'));
+      if (this._data.isEmpty&&!_hasMore) {
+        emit(DataNotFoundState(message: dataNotFoundMessage));
+      }
+    } catch (e) {
+      emit(ErrorState(message: errorMessage));
     }
   }
 }

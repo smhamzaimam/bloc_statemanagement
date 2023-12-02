@@ -1,14 +1,15 @@
+import 'package:bloc_statemanagement/screen/article_listing_screen.dart';
 import 'package:bloc_statemanagement/screen/article_screen.dart';
 import 'package:flutter/material.dart';
 
-class ArticleListingScreen extends StatefulWidget {
-  const ArticleListingScreen({super.key});
+class ArticleHomeScreen extends StatefulWidget {
+  const ArticleHomeScreen({super.key});
 
   @override
-  State<ArticleListingScreen> createState() => _ArticleListingScreenState();
+  State<ArticleHomeScreen> createState() => _ArticleHomeScreenState();
 }
 
-class _ArticleListingScreenState extends State<ArticleListingScreen> {
+class _ArticleHomeScreenState extends State<ArticleHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,6 +58,17 @@ class _ArticleListingScreenState extends State<ArticleListingScreen> {
                     }));
                   },
                   child: const Text('Article error state')),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const ArticleListingScreen();
+                    }));
+                  },
+                  child: const Text('Paginate Articles')),
             )
           ],
         ),

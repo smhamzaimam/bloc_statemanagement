@@ -1,5 +1,5 @@
-import 'bloc_states.dart';
-import 'cubits.dart';
+import '../bloc_states.dart';
+import '../cubits.dart';
 
 class Article {
   final String id;
