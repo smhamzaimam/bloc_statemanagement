@@ -1,5 +1,3 @@
-
-
 /* *****************************  Bloc State Start ***************************** */
 abstract class BlocState {
   BlocState();

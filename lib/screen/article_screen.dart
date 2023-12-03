@@ -1,7 +1,8 @@
 import 'package:bloc_statemanagement/cubits/articleCubit.dart';
-import 'package:bloc_statemanagement/bloc_states.dart';
+import 'package:bloc_statemanagement/generic_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../article_model.dart';
 
 class ArticleScreen extends StatefulWidget {
   final int articleId;
@@ -16,17 +17,22 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     articleCubit = ArticleCubit(initState: InitialState(widget.articleId));
     articleCubit.getArticle();
   }
 
   @override
+  void dispose() {
+    articleCubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Article ${widget.articleId+1}'),
+        title: Text('Article ${widget.articleId}'),
       ),
       body: BlocProvider(
           create: (context) => articleCubit,
@@ -39,7 +45,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   if (state is LoadingState)
                   const  Center(child:  CircularProgressIndicator(color: Colors.deepPurple,)),
                   if (state is DataFoundState<Article?>) ...[
-                     Text(state.data!.id),
+                     Text('Article ID: ${state.data!.id}'),
                      Text(state.data!.title),
                      Text(state.data!.content),
                   ],

@@ -1,31 +1,37 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc_states.dart';
+import 'generic_states.dart';
 
 class GetDataCubit extends Cubit<BlocState> {
   GetDataCubit(InitialState initializeState) : super(initializeState);
+
+  _emitState(BlocState state) {
+    if (!isClosed) {
+      emit(state);
+    }
+  }
 
   emitDataState<T>(
       {required Future<T> Function() fetchData,
       required String errorMessage,
       required String dataNotFoundMessage}) async {
     try {
-      emit(LoadingState());
+      _emitState(LoadingState());
       final data = await fetchData();
       if (data != null) {
         if (!super.isClosed) {
-          emit(DataFoundState<T>(data: data));
+          _emitState(DataFoundState<T>(data: data));
         }
       } else {
         if (!super.isClosed) {
-          emit(DataNotFoundState(
+          _emitState(DataNotFoundState(
             message: dataNotFoundMessage,
           ));
         }
       }
     } catch (e) {
       if (!super.isClosed) {
-        emit(ErrorState(
+        _emitState(ErrorState(
           message: errorMessage,
         ));
       }
@@ -34,13 +40,12 @@ class GetDataCubit extends Cubit<BlocState> {
 }
 
 class GetPaginatedDataCubit<T> extends Cubit<BlocState> {
-  List<T> _data = [];
+  final List<T> _data = [];
   int _page = 1;
   bool _loading = false, _hasMore = true;
   late Future<List<T>> Function(int page) dataFetchFunction;
   final int _limit = 10;
   final String errorMessage, dataNotFoundMessage;
-
 
   GetPaginatedDataCubit.initialize({
     required BlocState initialState,
@@ -48,37 +53,52 @@ class GetPaginatedDataCubit<T> extends Cubit<BlocState> {
     required this.errorMessage,
     required this.dataNotFoundMessage,
   }) : super(initialState);
-int getDataLength()=>_data.length;
 
-T getListItem(int index)=>_data[index];
+  ///Use to get length of list
+  int getDataLength() => _data.length;
 
+  ///Use to get item by index from list
+  T getListItem(int index) => _data[index];
+
+  _emitState(BlocState state) {
+    if (!isClosed) {
+      emit(state);
+    }
+  }
+
+  ///Refresh bool is to refresh all data can be used with refreshindicator widget
   getData({bool refreshPagination = false}) async {
     try {
+// reseting cubit data in case of referesh indicator is pulled
       if (refreshPagination) {
         _data.clear();
         _page = 1;
-        _hasMore = true;  
+        _hasMore = true;
       }
-      emit(UpdatePageState(hasMoreData: _hasMore));
+      _emitState(UpdatePageState(hasMoreData: _hasMore));
+// Stoping api call to hit again during async call
       if (!_loading) {
         _loading = true;
         final response = await this.dataFetchFunction(_page);
+// handing to stop pagination
         if (response.isEmpty || response.length < _limit) {
           _hasMore = false;
         } else {
+// increamenting the page in case of more data available
           _page++;
         }
         _data.addAll(response);
         _loading = false;
-
-        emit(UpdatePageState(hasMoreData: _hasMore));
+// emiting state to update UI with new data and has more to show loading until pagination is stopped
+        _emitState(UpdatePageState(hasMoreData: _hasMore));
       }
 
-      if (this._data.isEmpty&&!_hasMore) {
-        emit(DataNotFoundState(message: dataNotFoundMessage));
+      if (this._data.isEmpty && !_hasMore) {
+        _emitState(DataNotFoundState(message: dataNotFoundMessage));
       }
     } catch (e) {
-      emit(ErrorState(message: errorMessage));
+//emiting error state in case of any failure in api call
+      _emitState(ErrorState(message: errorMessage));
     }
   }
 }

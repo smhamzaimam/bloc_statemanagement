@@ -24,19 +24,41 @@ class _ArticleHomeScreenState extends State<ArticleHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ...List.generate(2, (index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return ArticleScreen(articleId: index);
-                      }));
-                    },
-                    child: Text('Article ${index + 1} Data found state')),
-              );
-            }),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const ArticleListingScreen();
+                    }));
+                  },
+                  child: const Text('Article Listing (With pagination)')),
+            ),
+            
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const ArticleListingScreen(showEmptyState: true,);
+                    }));
+                  },
+                  child: const Text('Article Listing (No Article Found)')),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const ArticleListingScreen(showErrorState: true,);
+                    }));
+                  },
+                  child: const Text('Article Listing (Error State)')),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: ElevatedButton(
@@ -46,7 +68,7 @@ class _ArticleHomeScreenState extends State<ArticleHomeScreen> {
                       return const ArticleScreen(articleId: 3);
                     }));
                   },
-                  child: const Text('Article not found state')),
+                  child: const Text('Article Screen (No Data Found)')),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -57,19 +79,8 @@ class _ArticleHomeScreenState extends State<ArticleHomeScreen> {
                       return const ArticleScreen(articleId: 4);
                     }));
                   },
-                  child: const Text('Article error state')),
+                  child: const Text('Article Screen (Error State)')),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const ArticleListingScreen();
-                    }));
-                  },
-                  child: const Text('Paginate Articles')),
-            )
           ],
         ),
       ),
